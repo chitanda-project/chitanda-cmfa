@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - '.chitanda/core-commit.txt'
+      - '.chitanda/core-tag.txt'
   workflow_dispatch:
     inputs:
       release_tag:
