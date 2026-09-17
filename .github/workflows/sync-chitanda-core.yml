@@ -2,7 +2,7 @@ name: Watch & Sync Chitanda Core
 
 on:
   schedule:
-    - cron: '0 */4 * * *' # Check every 4 hours
+    - cron: '0 */2 * * *' # Check every 2 hours
   workflow_dispatch:
 
 permissions:
@@ -22,12 +22,17 @@ jobs:
         id: check_core
         run: |
           CORE_REPO="violetaini/chitanda"
-          echo "Fetching latest commit from $CORE_REPO:main..."
-          LATEST_SHA=$(curl -s -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${CORE_REPO}/commits/main" | jq -r '.sha // empty')
+          echo "Fetching latest commit and tags from $CORE_REPO..."
           
+          LATEST_SHA=$(curl -s -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${CORE_REPO}/commits/main" | jq -r '.sha // empty')
           if [ -z "$LATEST_SHA" ] || [ "$LATEST_SHA" = "null" ]; then
             echo "Failed to retrieve latest commit from $CORE_REPO."
             exit 1
+          fi
+          
+          LATEST_TAG=$(curl -s -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${CORE_REPO}/releases?per_page=10" | jq -r '[.[] | select(.tag_name | startswith("v1."))] | .[0].tag_name // empty')
+          if [ -z "$LATEST_TAG" ] || [ "$LATEST_TAG" = "null" ]; then
+            LATEST_TAG=$(curl -s -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${CORE_REPO}/releases/latest" | jq -r '.tag_name // empty')
           fi
           
           CURRENT_SHA=""
@@ -35,29 +40,49 @@ jobs:
             CURRENT_SHA=$(cat .chitanda/core-commit.txt | tr -d '[:space:]')
           fi
           
+          CURRENT_TAG=""
+          if [ -f .chitanda/core-tag.txt ]; then
+            CURRENT_TAG=$(cat .chitanda/core-tag.txt | tr -d '[:space:]')
+          fi
+          
           echo "Current tracked commit: '$CURRENT_SHA'"
           echo "Latest upstream commit:  '$LATEST_SHA'"
+          echo "Current tracked tag:    '$CURRENT_TAG'"
+          echo "Latest upstream tag:     '$LATEST_TAG'"
           
+          HAS_UPDATE=false
           if [ "$LATEST_SHA" != "$CURRENT_SHA" ]; then
-            echo "Core update detected!"
+            echo "Core commit update detected!"
+            HAS_UPDATE=true
+          fi
+          if [ -n "$LATEST_TAG" ] && [ "$LATEST_TAG" != "$CURRENT_TAG" ]; then
+            echo "Core tag update detected!"
+            HAS_UPDATE=true
+          fi
+          
+          if [ "$HAS_UPDATE" = "true" ]; then
             echo "has_update=true" >> $GITHUB_OUTPUT
             echo "latest_sha=$LATEST_SHA" >> $GITHUB_OUTPUT
             echo "short_sha=${LATEST_SHA:0:7}" >> $GITHUB_OUTPUT
+            echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
           else
             echo "Core is up-to-date."
             echo "has_update=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Update Tracked Commit and Trigger Build
+      - name: Update Tracked Metadata and Trigger Build
         if: steps.check_core.outputs.has_update == 'true'
         run: |
           mkdir -p .chitanda
           echo "${{ steps.check_core.outputs.latest_sha }}" > .chitanda/core-commit.txt
+          if [ -n "${{ steps.check_core.outputs.latest_tag }}" ]; then
+            echo "${{ steps.check_core.outputs.latest_tag }}" > .chitanda/core-tag.txt
+          fi
           
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .chitanda/core-commit.txt
-          git commit -m "chore(core): sync Chitanda core to ${{ steps.check_core.outputs.short_sha }}"
+          git add .chitanda/core-commit.txt .chitanda/core-tag.txt
+          git commit -m "chore(core): sync Chitanda core to ${{ steps.check_core.outputs.latest_tag }} (${{ steps.check_core.outputs.short_sha }})"
           git push origin main
           
           echo "Triggering build-release.yaml workflow..."
@@ -65,5 +90,5 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/actions/workflows/build-release.yaml/dispatches" \
-            -d '{"ref":"main"}'
+            -d '{"ref":"main","inputs":{"core_tag":"${{ steps.check_core.outputs.latest_tag }}"}}'
           echo "Build triggered."

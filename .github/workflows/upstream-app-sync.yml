@@ -84,7 +84,7 @@ jobs:
 
           # Add upstream remote and fetch
           git remote add upstream https://github.com/MetaCubeX/ClashMetaForAndroid.git || git remote set-url upstream https://github.com/MetaCubeX/ClashMetaForAndroid.git
-          git fetch upstream --tags
+          git fetch upstream --tags --force
 
           # Merge upstream tag into main
           git merge -X theirs "$TAG" --no-edit -m "chore(sync): sync upstream CMFA $TAG" || (git merge --abort && git checkout "$TAG" -- .)
