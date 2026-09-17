@@ -118,17 +118,25 @@ jobs:
           EXPLICIT_TAG="${{ inputs.release_tag }}"
           if [ -n "$EXPLICIT_TAG" ]; then
             RELEASE_TAG="$EXPLICIT_TAG"
-            RELEASE_NAME="ClashMetaForAndroid $EXPLICIT_TAG"
+            RELEASE_NAME="$EXPLICIT_TAG"
           else
-            CANDIDATE="v${APP_VERSION}-${CORE_TAG}"
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://api.github.com/repos/${{ github.repository }}/releases/tags/${CANDIDATE}")
+            BASE_TAG="v${APP_VERSION}"
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://api.github.com/repos/${{ github.repository }}/releases/tags/${BASE_TAG}")
             if [ "$STATUS" = "200" ]; then
-              RELEASE_TAG="v${APP_VERSION}-${CORE_TAG}-${CORE_COMMIT}"
-              RELEASE_NAME="ClashMetaForAndroid v${APP_VERSION} (${CORE_TAG} / ${CORE_COMMIT})"
+              REV=1
+              while true; do
+                TAG_CANDIDATE="${BASE_TAG}.${REV}"
+                REV_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://api.github.com/repos/${{ github.repository }}/releases/tags/${TAG_CANDIDATE}")
+                if [ "$REV_STATUS" != "200" ]; then
+                  RELEASE_TAG="${TAG_CANDIDATE}"
+                  break
+                fi
+                REV=$((REV + 1))
+              done
             else
-              RELEASE_TAG="${CANDIDATE}"
-              RELEASE_NAME="ClashMetaForAndroid v${APP_VERSION} (Chitanda Core ${CORE_TAG})"
+              RELEASE_TAG="${BASE_TAG}"
             fi
+            RELEASE_NAME="${RELEASE_TAG}"
           fi
           
           echo "release_tag=${RELEASE_TAG}" >> $GITHUB_OUTPUT
