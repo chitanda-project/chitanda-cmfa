@@ -133,6 +133,7 @@ jobs:
                 fi
                 REV=$((REV + 1))
               done
+              sed -i "s/versionName = .*/versionName = \"${APP_VERSION}.${REV}\"/" build.gradle.kts
             else
               RELEASE_TAG="${BASE_TAG}"
             fi
