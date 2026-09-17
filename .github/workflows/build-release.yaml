@@ -177,17 +177,3 @@ jobs:
           prerelease: false
           make_latest: true
           clobber: true
-
-      - name: Update Prerelease-alpha
-        uses: softprops/action-gh-release@v2
-        if: success()
-        with:
-          tag_name: Prerelease-alpha
-          name: Prerelease-alpha (${{ steps.process-version.outputs.app_version }})
-          body: |
-            Continuous Alpha build of **ClashMetaForAndroid** with latest Chitanda Protocol.
-            - App Version: `${{ steps.process-version.outputs.app_version }}`
-            - Core Version: `${{ steps.core-info.outputs.core_tag }}` (`${{ steps.core-info.outputs.core_commit }}`)
-          files: app/build/outputs/apk/meta/release/*
-          prerelease: true
-          clobber: true
