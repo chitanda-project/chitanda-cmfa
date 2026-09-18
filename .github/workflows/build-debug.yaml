@@ -17,7 +17,7 @@ jobs:
       - name: Checkout pinned Chitanda overlay
         uses: actions/checkout@v4
         with:
-          repository: violetaini/chitanda
+          repository: chitanda-project/chitanda
           ref: main
           path: .chitanda-src
 

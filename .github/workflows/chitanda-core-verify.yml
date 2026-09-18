@@ -23,7 +23,7 @@ jobs:
       - name: Checkout Chitanda overlay source
         uses: actions/checkout@v4
         with:
-          repository: violetaini/chitanda
+          repository: chitanda-project/chitanda
           ref: main
           path: .chitanda-src
 

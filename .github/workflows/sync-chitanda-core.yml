@@ -21,7 +21,7 @@ jobs:
       - name: Check for Chitanda Core Updates
         id: check_core
         run: |
-          CORE_REPO="violetaini/chitanda"
+          CORE_REPO="chitanda-project/chitanda"
           echo "Fetching latest commit and tags from $CORE_REPO..."
           
           LATEST_SHA=$(curl -s -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${CORE_REPO}/commits/main" | jq -r '.sha // empty')
