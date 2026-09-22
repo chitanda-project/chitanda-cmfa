@@ -1,14 +1,31 @@
-## Clash Meta for Android
+<div align="center">
 
-A Graphical user interface of [Clash.Meta](https://github.com/MetaCubeX/Clash.Meta) for Android
+<img src="https://raw.githubusercontent.com/chitanda-project/chitanda/main/public/avatar.webp" alt="Chitanda" width="120" />
 
-### Feature
+# 🌸 Chitanda CMFA (Chitanda for Android)
 
-Feature of [Clash.Meta](https://github.com/MetaCubeX/Clash.Meta)
+**次世代 Android 向け高性能プロキシクライアント**
 
-[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
-     alt="Get it on F-Droid"
-     height="80">](https://f-droid.org/packages/com.github.metacubex.clash.meta/)
+[![Release](https://img.shields.io/github/v/release/chitanda-project/chitanda-cmfa?color=green&style=flat-square)](https://github.com/chitanda-project/chitanda-cmfa/releases)
+[![Build](https://github.com/chitanda-project/chitanda-cmfa/actions/workflows/build-release.yaml/badge.svg)](https://github.com/chitanda-project/chitanda-cmfa/actions)
+[![Official Website](https://img.shields.io/badge/Official-chitanda.net-blue?style=flat-square)](https://chitanda.net)
+
+<p align="center">
+  <b>Chitanda CMFA</b> は、Android 端末向けに最適化された公式プロキシクライアントです。<br>
+  次世代プロキシコア <b><a href="https://github.com/chitanda-project/chitanda">Chitanda Core (Mihomo)</a></b> を内蔵し、ネイティブ <b>Chitanda プロトコル</b> による超高速・低遅延なセキュア通信を提供します。
+</p>
+
+</div>
+
+> [!WARNING]
+> ### ⚠️ 免責事項 (Disclaimer)
+> 本プロジェクトおよび関連リソースは、学術研究、ネットワークセキュリティ検証、および正当な管理運用を目的として公開・提供されています。
+> 
+> 1. **法令遵守の義務**：本ソフトウェアおよび関連コードを利用する際は、**必ずご利用者ご自身の所在国・地域の法令および規則を遵守してください**。
+> 2. **利用の禁止**：本ソフトウェアの利用が所在国または地域の法令・規則に違反する場合、**いかなる目的であっても本ソフトウェアのダウンロード、インストール、実行、および二次配布を行わないでください**。
+> 3. **免責条項**：開発者およびプロジェクト保守管理者は、本ソフトウェアの使用、誤用、またはそれに関連して生じたいかなる損害、法的紛争、および責任についても一切の責任を負いません。
+
+---
 
 ### Requirement
 
